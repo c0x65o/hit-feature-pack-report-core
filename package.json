@@ -1,6 +1,6 @@
 {
-  "name": "@hit/feature-pack-reports",
-  "version": "1.0.3",
+  "name": "@hit/feature-pack-report-core",
+  "version": "1.0.4",
   "description": "A HIT feature pack",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,14 +29,14 @@
     "dev": "tsc --watch"
   },
   "peerDependencies": {
-    "@hit/feature-pack-dashboards": "*",
+    "@hit/feature-pack-dashboard-core": "*",
     "@hit/ui-kit": "*",
     "next": "15.5.9",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@hit/feature-pack-dashboards": "file:../hit-feature-pack-dashboard-core",
+    "@hit/feature-pack-dashboard-core": "file:../hit-feature-pack-dashboard-core",
     "@hit/ui-kit": "file:../../packages/hit-ui-kit-ts",
     "@types/node": "^20",
     "@types/react": "^19.0.0",

@@ -2,7 +2,7 @@
 import { jsxs as _jsxs, jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
 import React from 'react';
 import { useUi } from '@hit/ui-kit';
-import { decodeReportPrefill, encodeReportPrefill } from '@hit/feature-pack-dashboards';
+import { decodeReportPrefill, encodeReportPrefill } from '@hit/feature-pack-dashboard-core';
 export function ReportBuilder() {
     const { Page, Card, Button, Spinner, Badge } = useUi();
     const [key, setKey] = React.useState('');
