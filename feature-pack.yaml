@@ -1,4 +1,13 @@
 name: reports
-description: A HIT feature pack
-routes: []
+title: Reports
+description: Report list + builder (v0), backed by dashboards storage
+
+routes:
+  - path: /reports
+    page: Reports
+    roles: []
+  - path: /reports/builder
+    page: ReportBuilder
+    roles: []
+
 nav: []
