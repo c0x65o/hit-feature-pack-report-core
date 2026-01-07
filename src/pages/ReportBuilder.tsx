@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useUi } from '@hit/ui-kit';
-import { decodeReportPrefill, encodeReportPrefill } from '@hit/feature-pack-dashboard-core';
+import { decodeReportPrefill, encodeReportPrefill } from '@hit/feature-pack-dashboards';
 
 export function ReportBuilder() {
   const { Page, Card, Button, Spinner, Badge } = useUi();
