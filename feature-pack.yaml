@@ -1,6 +1,6 @@
-name: reports
+name: report-core
 title: Reports
-description: Report list + builder (v0), backed by dashboards storage
+description: "Report core: list + builder (v0), backed by dashboards storage"
 
 routes:
   - path: /reports

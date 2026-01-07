@@ -1,6 +1,6 @@
 {
   "name": "@hit/feature-pack-reports",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A HIT feature pack",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,8 +36,8 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@hit/feature-pack-dashboards": "file:../hit-feature-pack-dashboards",
-    "@hit/ui-kit": "file:../hit-ui-kit",
+    "@hit/feature-pack-dashboards": "file:../hit-feature-pack-dashboard-core",
+    "@hit/ui-kit": "file:../../packages/hit-ui-kit-ts",
     "@types/node": "^20",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
