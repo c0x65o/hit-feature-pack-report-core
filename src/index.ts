@@ -1,5 +1,5 @@
 /**
- * @hit/feature-pack-reports
+ * @hit/feature-pack-report-core
  *
  * Report list + report builder UI (v0), backed by dashboard_definitions storage.
  */
