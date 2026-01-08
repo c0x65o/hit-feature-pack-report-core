@@ -4,8 +4,34 @@ import React from 'react';
 import { useUi } from '@hit/ui-kit';
 import { decodeReportPrefill, encodeReportPrefill } from '@hit/feature-pack-dashboard-core';
 
+function getStoredHitToken(): string | null {
+  if (typeof localStorage === 'undefined') return null;
+  const v = localStorage.getItem('hit_token');
+  return v ? String(v) : null;
+}
+
+function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit) {
+  const token = getStoredHitToken();
+  const headers = new Headers(init?.headers || undefined);
+  if (token && !headers.get('authorization') && !headers.get('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  return fetch(input, { ...init, headers, credentials: 'include' });
+}
+
+function slugify(s: string): string {
+  return (
+    String(s || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_+|_+$/g, '') || 'report'
+  );
+}
+
 export function ReportBuilder() {
-  const { Page, Card, Button, Spinner, Badge } = useUi();
+  const { Page, Card, Button, Spinner, Badge, Input } = useUi();
 
   const [key, setKey] = React.useState<string>('');
   const [title, setTitle] = React.useState<string>('Report Builder');
@@ -44,9 +70,12 @@ export function ReportBuilder() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/dashboard-definitions/${encodeURIComponent(key)}`);
+      const res = await fetchWithAuth(`/api/dashboard-definitions/${encodeURIComponent(key)}`);
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || `Failed (${res.status})`);
+      if (typeof json?.data?.name === 'string' && json.data.name.trim()) {
+        setTitle(json.data.name.trim());
+      }
       const def = json?.data?.definition;
       if (def?.kind === 'report_v0' && def?.model && typeof def.model === 'object') {
         if (typeof def.model.title === 'string') setTitle(def.model.title);
@@ -69,7 +98,7 @@ export function ReportBuilder() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/metrics/drilldown', {
+      const res = await fetchWithAuth('/api/metrics/drilldown', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pointFilter: filter, page: nextPage, pageSize, includeContributors: false }),
@@ -90,17 +119,49 @@ export function ReportBuilder() {
     }
   }, [filter]);
 
+  const saveAsNew = React.useCallback(async () => {
+    if (!filter) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const newKey = `report.${slugify(title)}.${crypto.randomUUID().replace(/-/g, '').slice(0, 10)}`;
+      const res = await fetchWithAuth('/api/dashboard-definitions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: newKey,
+          name: title || 'New Report',
+          description: null,
+          visibility: 'private',
+          scope: { kind: 'global' },
+          definition: { kind: 'report_v0', model: { title, format, pointFilter: filter } },
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json?.error || `Failed (${res.status})`);
+      setKey(newKey);
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', `/reports/builder?key=${encodeURIComponent(newKey)}`);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, title, format]);
+
   const save = React.useCallback(async () => {
     if (!key) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/dashboard-definitions/${encodeURIComponent(key)}`, {
+      const res = await fetchWithAuth(`/api/dashboard-definitions/${encodeURIComponent(key)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          name: title || 'Report',
           // v0: store builder state in definition.model
-          definition: { kind: 'report_v0', version: 0, model: { title, format, pointFilter: filter } },
+          definition: { kind: 'report_v0', model: { title, format, pointFilter: filter } },
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -112,11 +173,28 @@ export function ReportBuilder() {
     }
   }, [key, title, format, filter]);
 
-  const shareLink = React.useMemo(() => {
+  const shareLinkPrefill = React.useMemo(() => {
     if (!filter) return '';
     const prefill = encodeReportPrefill({ title, format, pointFilter: filter });
     return `/reports/builder?prefill=${prefill}`;
   }, [filter, title, format]);
+
+  const stableLink = React.useMemo(() => (key ? `/reports/builder?key=${encodeURIComponent(key)}` : ''), [key]);
+
+  const copyToClipboard = React.useCallback(async (text: string) => {
+    const t = String(text || '').trim();
+    if (!t) return;
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(t);
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    // Fallback: best-effort prompt.
+    if (typeof window !== 'undefined') window.prompt('Copy this URL:', t);
+  }, []);
 
   return (
     <Page title={title} description="Report Builder (v0): drilldown-first view of a point filter">
@@ -124,17 +202,20 @@ export function ReportBuilder() {
         {key ? <Badge variant="info">saved: {key}</Badge> : <Badge variant="warning">unsaved</Badge>}
         <Badge variant="default">report tz: {reportTz}</Badge>
         <Button variant="secondary" onClick={() => run(1)} disabled={loading || !filter}>Run</Button>
-        {key ? <Button onClick={save} disabled={loading}>Save</Button> : null}
-        {shareLink ? (
+        {key ? <Button onClick={save} disabled={loading}>Save</Button> : <Button onClick={saveAsNew} disabled={loading || !filter}>Save as new</Button>}
+        {stableLink ? (
+          <Button variant="secondary" onClick={() => copyToClipboard(stableLink)}>
+            Copy URL
+          </Button>
+        ) : null}
+        {shareLinkPrefill ? (
           <Button
             variant="secondary"
             onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.history.replaceState({}, '', shareLink);
-              }
+              copyToClipboard(shareLinkPrefill);
             }}
           >
-            Copyable URL
+            Copy prefill URL
           </Button>
         ) : null}
       </div>
@@ -144,6 +225,15 @@ export function ReportBuilder() {
       <div style={{ padding: 16 }}>
         <Card title="Point filter" description="This is the drilldown unit. Over time, the builder will generate this from charts/tables/metrics selection.">
           <div style={{ padding: 14 }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+              <div style={{ minWidth: 280 }}>
+                <Input label="Title" value={title} onChange={(e: any) => setTitle(String(e?.target?.value || ''))} />
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                <Button variant={format === 'number' ? 'primary' : 'secondary'} onClick={() => setFormat('number')}>Number</Button>
+                <Button variant={format === 'usd' ? 'primary' : 'secondary'} onClick={() => setFormat('usd')}>USD</Button>
+              </div>
+            </div>
             <code style={{ fontSize: 12, display: 'block', whiteSpace: 'pre-wrap' }}>{JSON.stringify(filter || {}, null, 2)}</code>
           </div>
         </Card>

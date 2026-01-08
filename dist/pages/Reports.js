@@ -25,7 +25,7 @@ export function Reports(props = {}) {
         try {
             // Reuse dashboard_definitions as the v0 “report definitions” store.
             // Convention: report keys start with `report.`.
-            const res = await fetch('/api/dashboard-definitions');
+            const res = await fetch('/api/dashboard-definitions', { credentials: 'include' });
             const json = await res.json().catch(() => ({}));
             if (!res.ok)
                 throw new Error(json?.error || `Failed (${res.status})`);
@@ -52,6 +52,7 @@ export function Reports(props = {}) {
             const res = await fetch('/api/dashboard-definitions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     key,
                     name: createName,
@@ -76,6 +77,8 @@ export function Reports(props = {}) {
             const href = `/reports/builder?key=${encodeURIComponent(key)}`;
             if (props.onNavigate)
                 props.onNavigate(href);
+            else if (typeof window !== 'undefined')
+                window.location.href = href;
         }
         catch (e) {
             setError(e instanceof Error ? e.message : String(e));
@@ -96,6 +99,8 @@ export function Reports(props = {}) {
                                                         const href = `/reports/builder?key=${encodeURIComponent(r.key)}`;
                                                         if (props.onNavigate)
                                                             props.onNavigate(href);
+                                                        else if (typeof window !== 'undefined')
+                                                            window.location.href = href;
                                                     }, children: "Open" }), _jsx(Button, { variant: "secondary", disabled: true, title: "Scheduling will be wired to Tasks later.", children: "Schedule (soon)" })] })] }, r.key))) })) : null] }) }) }), _jsx(Modal, { open: createOpen, onClose: () => setCreateOpen(false), title: "Create report", description: "Creates a private report definition (v0).", children: _jsxs("div", { style: { padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }, children: [_jsx(Input, { label: "Name", value: createName, onChange: (e) => setCreateName(e.target.value) }), _jsx(Input, { label: "Description", value: createDesc, onChange: (e) => setCreateDesc(e.target.value) }), _jsxs("div", { style: { display: 'flex', gap: 10, justifyContent: 'flex-end' }, children: [_jsx(Button, { variant: "secondary", onClick: () => setCreateOpen(false), disabled: createBusy, children: "Cancel" }), _jsx(Button, { onClick: createReport, disabled: createBusy || !createName.trim(), children: createBusy ? 'Creating…' : 'Create' })] })] }) })] }));
 }
 export default Reports;

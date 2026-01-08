@@ -45,7 +45,7 @@ export function Reports(props: { onNavigate?: (href: string) => void } = {}) {
     try {
       // Reuse dashboard_definitions as the v0 “report definitions” store.
       // Convention: report keys start with `report.`.
-      const res = await fetch('/api/dashboard-definitions');
+      const res = await fetch('/api/dashboard-definitions', { credentials: 'include' });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || `Failed (${res.status})`);
       const list = Array.isArray(json.data) ? (json.data as DashboardListItem[]) : [];
@@ -71,6 +71,7 @@ export function Reports(props: { onNavigate?: (href: string) => void } = {}) {
       const res = await fetch('/api/dashboard-definitions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           key,
           name: createName,
@@ -93,6 +94,7 @@ export function Reports(props: { onNavigate?: (href: string) => void } = {}) {
       // Go straight into the builder.
       const href = `/reports/builder?key=${encodeURIComponent(key)}`;
       if (props.onNavigate) props.onNavigate(href);
+      else if (typeof window !== 'undefined') window.location.href = href;
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -148,6 +150,7 @@ export function Reports(props: { onNavigate?: (href: string) => void } = {}) {
                         onClick={() => {
                           const href = `/reports/builder?key=${encodeURIComponent(r.key)}`;
                           if (props.onNavigate) props.onNavigate(href);
+                          else if (typeof window !== 'undefined') window.location.href = href;
                         }}
                       >
                         Open
