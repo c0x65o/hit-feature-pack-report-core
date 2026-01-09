@@ -1,18 +1,20 @@
 {
   "name": "@hit/feature-pack-report-core",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A HIT feature pack",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
+      "development": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./pages/*": {
+      "development": "./src/pages/*.tsx",
       "types": "./dist/pages/*.d.ts",
       "import": "./dist/pages/*.js",
       "require": "./dist/pages/*.js",
@@ -43,5 +45,6 @@
     "@types/react-dom": "^19.0.0",
     "next": "^15.5.9",
     "typescript": "^5"
-  }
+  },
+  "sideEffects": false
 }
