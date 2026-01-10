@@ -1,6 +1,6 @@
 {
   "name": "@hit/feature-pack-report-core",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A HIT feature pack",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,6 +36,11 @@
     "next": "15.5.9",
     "react": "19.2.3",
     "react-dom": "19.2.3"
+  },
+  "peerDependenciesMeta": {
+    "@hit/ui-kit": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@hit/feature-pack-dashboard-core": "file:../hit-feature-pack-dashboard-core",
