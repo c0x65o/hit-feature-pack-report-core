@@ -6,8 +6,100 @@ routes:
   - path: /reports
     page: Reports
     roles: []
+    default_roles_allow: [user]
+    authz: { entity: reports, verb: read }
   - path: /reports/builder
     page: ReportBuilder
     roles: []
+    default_roles_allow: [user]
+    authz: { entity: reports, verb: write, require_create: true }
 
 nav: []
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PERMISSIONS - Action definitions (for admin-core permissions UI + runtime checks)
+# ─────────────────────────────────────────────────────────────────────────────
+permissions:
+  actions:
+    # Scope Policy Tree: report-core (global) -> entity overrides.
+    #
+    # Scope modes:
+    # - none: deny all access for this verb/entity (hide pages + block APIs)
+    # - any: ignore scope (read everything, respecting visibility and shares via dashboard storage)
+    # - own: only owned reports (report.owner_user_id === current user id, via dashboard storage)
+    # - ldd: same as own (reports don't have LDD fields, so can't check LDD)
+    #
+    # These are mutually exclusive per node; the Security Groups UI renders them as dropdowns.
+    - key: report-core.read.scope.none
+      label: "Report Read Scope = None"
+      description: "Deny all report read access."
+      default_enabled: false
+    - key: report-core.read.scope.any
+      label: "Report Read Scope = Any"
+      description: "Read all reports regardless of ownership (respects visibility and shares via dashboard storage)."
+      default_enabled: false
+    - key: report-core.read.scope.own
+      label: "Report Read Scope = Own"
+      description: "Read only reports you own."
+      default_enabled: false
+    - key: report-core.read.scope.ldd
+      label: "Report Read Scope = LDD"
+      description: "Read reports you own (reports don't have LDD fields, so same as own)."
+      default_enabled: false
+
+    - key: report-core.write.scope.none
+      label: "Report Write Scope = None"
+      description: "Deny all report write access."
+      default_enabled: false
+    - key: report-core.write.scope.any
+      label: "Report Write Scope = Any"
+      description: "Edit all reports regardless of ownership (respects shares via dashboard storage)."
+      default_enabled: false
+    - key: report-core.write.scope.own
+      label: "Report Write Scope = Own"
+      description: "Edit only reports you own."
+      default_enabled: false
+    - key: report-core.write.scope.ldd
+      label: "Report Write Scope = LDD"
+      description: "Edit reports you own (reports don't have LDD fields, so same as own)."
+      default_enabled: false
+
+    # Reports override (optional): if set, overrides report-core.read.scope.* for reports only.
+    - key: report-core.reports.read.scope.none
+      label: "Report Reports Read Scope = None"
+      description: "Deny all report read access."
+      default_enabled: false
+    - key: report-core.reports.read.scope.any
+      label: "Report Reports Read Scope = Any"
+      description: "Read all reports regardless of ownership (respects visibility and shares via dashboard storage)."
+      default_enabled: false
+    - key: report-core.reports.read.scope.own
+      label: "Report Reports Read Scope = Own"
+      description: "Read only reports you own."
+      default_enabled: false
+    - key: report-core.reports.read.scope.ldd
+      label: "Report Reports Read Scope = LDD"
+      description: "Read reports you own (reports don't have LDD fields, so same as own)."
+      default_enabled: false
+
+    - key: report-core.reports.write.scope.none
+      label: "Report Reports Write Scope = None"
+      description: "Deny all report write access."
+      default_enabled: false
+    - key: report-core.reports.write.scope.any
+      label: "Report Reports Write Scope = Any"
+      description: "Edit all reports regardless of ownership (respects shares via dashboard storage)."
+      default_enabled: false
+    - key: report-core.reports.write.scope.own
+      label: "Report Reports Write Scope = Own"
+      description: "Edit only reports you own."
+      default_enabled: false
+    - key: report-core.reports.write.scope.ldd
+      label: "Report Reports Write Scope = LDD"
+      description: "Edit reports you own (reports don't have LDD fields, so same as own)."
+      default_enabled: false
+
+    - key: report-core.reports.create
+      label: Create Report
+      description: "Create a new report definition."
+      default_enabled: false
