@@ -42,10 +42,6 @@ permissions:
       label: "Report Read Scope = Own"
       description: "Read only reports you own."
       default_enabled: false
-    - key: report-core.read.scope.ldd
-      label: "Report Read Scope = LDD"
-      description: "Read reports you own (reports don't have LDD fields, so same as own)."
-      default_enabled: false
 
     - key: report-core.write.scope.none
       label: "Report Write Scope = None"
@@ -58,10 +54,6 @@ permissions:
     - key: report-core.write.scope.own
       label: "Report Write Scope = Own"
       description: "Edit only reports you own."
-      default_enabled: false
-    - key: report-core.write.scope.ldd
-      label: "Report Write Scope = LDD"
-      description: "Edit reports you own (reports don't have LDD fields, so same as own)."
       default_enabled: false
 
     # Reports override (optional): if set, overrides report-core.read.scope.* for reports only.
@@ -77,10 +69,6 @@ permissions:
       label: "Report Reports Read Scope = Own"
       description: "Read only reports you own."
       default_enabled: false
-    - key: report-core.reports.read.scope.ldd
-      label: "Report Reports Read Scope = LDD"
-      description: "Read reports you own (reports don't have LDD fields, so same as own)."
-      default_enabled: false
 
     - key: report-core.reports.write.scope.none
       label: "Report Reports Write Scope = None"
@@ -93,10 +81,6 @@ permissions:
     - key: report-core.reports.write.scope.own
       label: "Report Reports Write Scope = Own"
       description: "Edit only reports you own."
-      default_enabled: false
-    - key: report-core.reports.write.scope.ldd
-      label: "Report Reports Write Scope = LDD"
-      description: "Edit reports you own (reports don't have LDD fields, so same as own)."
       default_enabled: false
 
     - key: report-core.reports.create
