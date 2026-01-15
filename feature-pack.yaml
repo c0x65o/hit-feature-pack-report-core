@@ -25,7 +25,7 @@ permissions:
     #
     # Scope modes:
     # - none: deny all access for this verb/entity (hide pages + block APIs)
-    # - any: ignore scope (read everything, respecting visibility and shares via dashboard storage)
+    # - all: ignore scope (read everything, respecting visibility and shares via dashboard storage)
     # - own: only owned reports (report.owner_user_id === current user id, via dashboard storage)
     # - ldd: same as own (reports don't have LDD fields, so can't check LDD)
     #
@@ -34,8 +34,8 @@ permissions:
       label: "Report Read Scope = None"
       description: "Deny all report read access."
       default_enabled: false
-    - key: report-core.read.scope.any
-      label: "Report Read Scope = Any"
+    - key: report-core.read.scope.all
+      label: "Report Read Scope = All"
       description: "Read all reports regardless of ownership (respects visibility and shares via dashboard storage)."
       default_enabled: false
     - key: report-core.read.scope.own
@@ -47,8 +47,8 @@ permissions:
       label: "Report Write Scope = None"
       description: "Deny all report write access."
       default_enabled: false
-    - key: report-core.write.scope.any
-      label: "Report Write Scope = Any"
+    - key: report-core.write.scope.all
+      label: "Report Write Scope = All"
       description: "Edit all reports regardless of ownership (respects shares via dashboard storage)."
       default_enabled: false
     - key: report-core.write.scope.own
@@ -61,8 +61,8 @@ permissions:
       label: "Report Reports Read Scope = None"
       description: "Deny all report read access."
       default_enabled: false
-    - key: report-core.reports.read.scope.any
-      label: "Report Reports Read Scope = Any"
+    - key: report-core.reports.read.scope.all
+      label: "Report Reports Read Scope = All"
       description: "Read all reports regardless of ownership (respects visibility and shares via dashboard storage)."
       default_enabled: false
     - key: report-core.reports.read.scope.own
@@ -74,8 +74,8 @@ permissions:
       label: "Report Reports Write Scope = None"
       description: "Deny all report write access."
       default_enabled: false
-    - key: report-core.reports.write.scope.any
-      label: "Report Reports Write Scope = Any"
+    - key: report-core.reports.write.scope.all
+      label: "Report Reports Write Scope = All"
       description: "Edit all reports regardless of ownership (respects shares via dashboard storage)."
       default_enabled: false
     - key: report-core.reports.write.scope.own
